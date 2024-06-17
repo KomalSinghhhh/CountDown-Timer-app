@@ -19,6 +19,14 @@ This project is a web application built using React and Material-UI that allows 
 
 ## Screenshots
 
+### Landing Screen
+
+<img width="1434" alt="Screenshot 2024-06-17 at 8 51 24 PM" src="https://github.com/KomalSinghhhh/CountDown-Timer-app/assets/111066880/6c1eaba7-cc0f-4528-8582-7459db25a53a">
+
+### Timers Screen
+
+<img width="1432" alt="Screenshot 2024-06-17 at 8 52 08 PM" src="https://github.com/KomalSinghhhh/CountDown-Timer-app/assets/111066880/6f52e1d8-7c35-4256-ba8d-609847b7910c">
+
 ---
 
 ## Finally thanks for trying out this application and please feel free to give feedback on the issues you faced or any other feedback you have ❤️

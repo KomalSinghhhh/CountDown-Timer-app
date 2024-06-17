@@ -11,9 +11,6 @@ import {
 import Timer from "../Components/Timer";
 import Heading from "../Components/Heading";
 
-const globalTime = 0;
-function globalTimer(n, duration) {}
-
 const TimersPage = () => {
   const { n, duration } = useParams();
   const [timers, setTimers] = useState([]);
@@ -36,16 +33,16 @@ const TimersPage = () => {
   const handleRemoveTimer = (id) => {
     const endedTimer = timers.find((timer) => timer.id === id);
     setTimers(timers.filter((timer) => timer.id !== id));
-    endedTimer.endTime = endedTimer.time;
+    if (endedTimers.find((timer) => timer.id === id)) return;
     setEndedTimers([...endedTimers, endedTimer]);
   };
 
   const handleEndAllTimers = () => {
-    const ended = timers.map((timer) => ({
-      ...timer,
-      endTime: new Date().toLocaleTimeString(),
-    }));
-    setEndedTimers([...endedTimers, ...ended]);
+    const ended = timers.filter(
+      (timer) => !endedTimers.some((endedTimer) => endedTimer.id === timer.id)
+    );
+
+    setEndedTimers((prevEndedTimers) => [...prevEndedTimers, ...ended]);
     setTimers([]);
   };
 
@@ -78,20 +75,12 @@ const TimersPage = () => {
         <Grid item xs={12} md={3}>
           <Typography variant="h5">Ended Timers</Typography>
           <Divider style={{ margin: "10px 0" }} />
-          <Box display="flex" flexDirection="column">
+          <Box display="flex" flexWrap="wrap">
             {endedTimers.map((timer) => (
-              <Box
-                key={timer.id}
-                mb={2}
-                p={2}
-                border={1}
-                borderRadius={4}
-                width="100%"
-              >
-                <Typography variant="subtitle1">{timer.name}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Ended at: {timer.endTime}
-                </Typography>
+              <Box key={timer.id} mr={2} mb={2} width="100%">
+                <Box border={1} borderRadius={4} p={2} className="timer ended">
+                  {timer.name} Ended
+                </Box>
               </Box>
             ))}
           </Box>

@@ -55,7 +55,7 @@ const Landing = () => {
               htmlFor="timerDuration"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              Duration of Timers
+              Duration of Timers in Minutes
             </label>
             <input
               type="number"

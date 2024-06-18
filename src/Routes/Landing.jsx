@@ -1,46 +1,89 @@
-// src/Landing.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, TextField, Button, Typography } from "@mui/material";
-import Heading from "../Components/Heading";
+import { Snackbar, SnackbarContent } from "@mui/material";
 
 const Landing = () => {
   const [timerCount, setTimerCount] = useState("");
   const [timerDuration, setTimerDuration] = useState("");
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!timerCount || !timerDuration) {
+      setSnackbarMessage("Please fill all the fields");
+      return;
+    }
+    if (timerCount < 1 || timerDuration < 1) {
+      setSnackbarMessage("Please enter valid values");
+      return;
+    }
     navigate(`/timers/${timerCount}/${timerDuration}`);
   };
 
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarMessage("");
+  };
+
   return (
-    <Container maxWidth="sm" style={{ marginTop: "50px" }}>
-      <Heading children="Set Timer"></Heading>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          type="number"
-          value={timerCount}
-          onChange={(e) => setTimerCount(e.target.value)}
-          placeholder="Enter number of timers"
-          variant="outlined"
-          fullWidth
-          margin="normal"
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 to-purple-500">
+      <div className="w-full max-w-2xl p-8 bg-white rounded-lg shadow-md dark:bg-gray-900">
+        <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
+          Set Timer
+        </h2>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <label
+              htmlFor="numTimers"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Number of Timers
+            </label>
+            <input
+              type="number"
+              id="numTimers"
+              min="1"
+              onChange={(e) => setTimerCount(e.target.value)}
+              className="block w-full p-3 mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="timerDuration"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Duration of Timers
+            </label>
+            <input
+              type="number"
+              id="timerDuration"
+              min="1"
+              onChange={(e) => setTimerDuration(e.target.value)}
+              className="block w-full p-3 mt-2 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          >
+            Start Timer
+          </button>
+        </form>
+      </div>
+      <Snackbar
+        open={snackbarMessage !== ""}
+        autoHideDuration={3000}
+        onClose={handleClose}
+      >
+        <SnackbarContent
+          message={snackbarMessage}
+          style={{ backgroundColor: "red", color: "white" }}
         />
-        <TextField
-          type="number"
-          value={timerDuration}
-          onChange={(e) => setTimerDuration(e.target.value)}
-          placeholder="Enter timer duration in minutes"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-        />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
-          Submit
-        </Button>
-      </form>
-    </Container>
+      </Snackbar>
+    </div>
   );
 };
 

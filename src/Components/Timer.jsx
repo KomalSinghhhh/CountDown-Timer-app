@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Box, IconButton, Typography } from "@mui/material";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CloseIcon from "@mui/icons-material/Close";
 
-const Timer = ({ id, name, duration, onRemove }) => {
+const formatTime = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${minutes.toString().padStart(2, "0")}:${secs
+    .toString()
+    .padStart(2, "0")}`;
+};
+
+const Timer = ({ id, name, duration, onRemove, curr }) => {
   const [time, setTime] = useState(duration);
   const [isActive, setIsActive] = useState(true);
 
@@ -15,60 +22,43 @@ const Timer = ({ id, name, duration, onRemove }) => {
         setTime((prevTime) => prevTime - 1);
       }, 1000);
     } else if (time === 0) {
-      onRemove(id);
+      onRemove(id, time);
     }
     return () => clearInterval(timerInterval);
-  }, [isActive, time, id, onRemove]);
+  }, [isActive, time, id, onRemove, curr]);
 
   const handlePause = () => {
     setIsActive(false);
   };
 
   const handleEnd = () => {
+    onRemove(id, time);
     setTime(0);
-    onRemove(id);
   };
 
   const handleResume = () => {
     setIsActive(true);
   };
 
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
   return (
-    <Box
-      border={1}
-      borderRadius={4}
-      p={2}
-      mt={2}
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      width="200px"
-    >
-      <Typography variant="h6">{name}</Typography>
-      <Typography variant="h4">{formatTime(time)}</Typography>
-      <Box mt={2} display="flex" justifyContent="space-between" width="100%">
+    <div className="flex flex-col items-center w-48 p-4 mt-2 bg-indigo-500 border border-gray-300 rounded shadow-md">
+      <h2 className="text-lg font-semibold text-white">{name}</h2>
+      <h1 className="text-2xl text-white">{formatTime(time)}</h1>
+      <div className="flex justify-between w-full mt-2">
         {isActive ? (
-          <IconButton color="primary" onClick={handlePause}>
+          <button className="text-blue-400" onClick={handlePause}>
             <PauseIcon />
-          </IconButton>
+          </button>
         ) : (
-          <IconButton color="success" onClick={handleResume}>
+          <button className="text-green-500" onClick={handleResume}>
             <PlayArrowIcon />
-          </IconButton>
+          </button>
         )}
-        <IconButton color="error" onClick={handleEnd}>
+        <button className="text-red-500" onClick={handleEnd}>
           <CloseIcon />
-        </IconButton>
-      </Box>
-    </Box>
+        </button>
+      </div>
+    </div>
   );
 };
 

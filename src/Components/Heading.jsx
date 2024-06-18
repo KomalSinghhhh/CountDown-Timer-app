@@ -1,11 +1,8 @@
-import React from "react";
-import { Typography } from "@mui/material";
-
 function Heading(props) {
   return (
-    <Typography variant="h4" style={{ marginBottom: "20px" }}>
+    <h1 className="text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl">
       {props.children}
-    </Typography>
+    </h1>
   );
 }
 

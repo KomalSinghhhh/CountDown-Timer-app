@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Container,
-  Button,
-  Typography,
-  Grid,
-  Box,
-  Divider,
-} from "@mui/material";
 import Timer from "../Components/Timer";
 import Heading from "../Components/Heading";
+
+const formatTime = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${minutes.toString().padStart(2, "0")}:${secs
+    .toString()
+    .padStart(2, "0")}`;
+};
 
 const TimersPage = () => {
   const { n, duration } = useParams();
@@ -25,12 +25,13 @@ const TimersPage = () => {
         id: i + 1,
         name: `Team ${i + 1}`,
         duration: initialDuration,
+        curr: initialDuration,
       });
     }
     setTimers(initialTimers);
   }, [n, duration]);
 
-  const handleRemoveTimer = (id) => {
+  const handleRemoveTimer = (id, endTime) => {
     const endedTimer = timers.find((timer) => timer.id === id);
     setTimers(timers.filter((timer) => timer.id !== id));
     if (endedTimers.find((timer) => timer.id === id)) return;
@@ -53,56 +54,55 @@ const TimersPage = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Heading children="Timers Page" />
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={9}>
-          <Typography variant="h5">Running Timers</Typography>
-          <Divider style={{ margin: "10px 0" }} />
-          <Box display="flex" flexWrap="wrap">
+    <div className="min-h-screen size-auto p-10 mx-auto ... bg-gradient-to-r from-indigo-500 to-purple-500 ">
+      <Heading>Timers</Heading>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 ">
+        <div className="col-span-1 p-4 border-gray-300 rounded md:col-span-2 bg-[#a78bfa]">
+          <h2 className="text-lg font-semibold text-white">Running Timers</h2>
+          <hr className="my-2" />
+          <div className="flex flex-wrap ">
             {timers.map((timer) => (
-              <Box key={timer.id} mr={2} mb={2}>
+              <div key={timer.id} className="m-4">
                 <Timer
                   id={timer.id}
                   name={timer.name}
                   duration={timer.duration}
+                  curr={timer.curr}
                   onRemove={handleRemoveTimer}
                 />
-              </Box>
+              </div>
             ))}
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Typography variant="h5">Ended Timers</Typography>
-          <Divider style={{ margin: "10px 0" }} />
-          <Box display="flex" flexWrap="wrap">
+          </div>
+        </div>
+        <div className="p-4 bg-[#a78bfa] border-gray-300 rounded">
+          <h2 className="text-lg font-semibold text-white">Ended Timers</h2>
+          <hr className="my-2" />
+          <div className="flex flex-wrap">
             {endedTimers.map((timer) => (
-              <Box key={timer.id} mr={2} mb={2} width="100%">
-                <Box border={1} borderRadius={4} p={2} className="timer ended">
+              <div key={timer.id} className="w-full mb-2 mr-2">
+                <div className="flex justify-center p-2 text-white bg-indigo-500 border rounded-md shadow-md timer ended">
                   {timer.name} Ended
-                </Box>
-              </Box>
+                </div>
+              </div>
             ))}
-          </Box>
-        </Grid>
-      </Grid>
-      <Box mt={4} display="flex" justifyContent="space-between">
-        <Button
-          variant="contained"
-          color="primary"
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-between mt-4">
+        <button
+          className="px-4 py-2 text-white bg-blue-500 rounded shadow-md hover:bg-blue-700"
           onClick={handleEndAllTimers}
         >
           End All
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
+        </button>
+        <button
+          className="px-4 py-2 text-white bg-blue-500 rounded shadow-md hover:bg-blue-700"
           onClick={handleClearTimers}
         >
           Clear Timers and Return
-        </Button>
-      </Box>
-    </Container>
+        </button>
+      </div>
+    </div>
   );
 };
 

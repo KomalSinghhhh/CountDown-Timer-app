@@ -1,43 +1,56 @@
-import React, { useState, useEffect } from "react";
-import PauseIcon from "@mui/icons-material/Pause";
+import React, { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { activeTimersState, endedTimersState } from "../Utils/TimersAtom";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
 import CloseIcon from "@mui/icons-material/Close";
 
-const formatTime = (seconds) => {
-  const minutes = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${minutes.toString().padStart(2, "0")}:${secs
-    .toString()
-    .padStart(2, "0")}`;
-};
-
-const Timer = ({ id, name, duration, onRemove, curr }) => {
-  const [time, setTime] = useState(duration);
-  const [isActive, setIsActive] = useState(true);
+const Timer = ({ id, name, duration, getRemainingTime }) => {
+  const [time, setTime] = useState(duration * 60);
+  const [isPaused, setIsPaused] = useState(false);
+  const [activeTimers, setActiveTimers] = useRecoilState(activeTimersState);
+  const [endedTimers, setEndedTimers] = useRecoilState(endedTimersState);
 
   useEffect(() => {
-    let timerInterval = null;
-    if (isActive && time > 0) {
-      timerInterval = setInterval(() => {
+    let timer;
+    if (!isPaused && time > 0) {
+      timer = setInterval(() => {
         setTime((prevTime) => prevTime - 1);
       }, 1000);
-    } else if (time === 0) {
-      onRemove(id, time);
     }
-    return () => clearInterval(timerInterval);
-  }, [isActive, time, id, onRemove, curr]);
+    return () => clearInterval(timer);
+  }, [isPaused, time]);
 
-  const handlePause = () => {
-    setIsActive(false);
+  useEffect(() => {
+    if (time === 0) {
+      handleEndTimer();
+    }
+  }, [time]);
+
+  useEffect(() => {
+    if (getRemainingTime) {
+      getRemainingTime(id, time);
+    }
+  }, [getRemainingTime, id, time]);
+
+  const pauseTimer = () => setIsPaused(true);
+  const resumeTimer = () => setIsPaused(false);
+
+  const handleEndTimer = () => {
+    setActiveTimers((prev) => prev.filter((timer) => timer.id !== id));
+    setEndedTimers((prev) => [...prev, { id, name, remainingTime: time }]);
   };
 
-  const handleEnd = () => {
-    onRemove(id, time);
-    setTime(0);
+  const cancelTimer = () => {
+    handleEndTimer();
   };
 
-  const handleResume = () => {
-    setIsActive(true);
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${
+      remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds
+    }`;
   };
 
   return (
@@ -45,16 +58,16 @@ const Timer = ({ id, name, duration, onRemove, curr }) => {
       <h2 className="text-lg font-semibold text-white">{name}</h2>
       <h1 className="text-2xl text-white">{formatTime(time)}</h1>
       <div className="flex justify-between w-full mt-2">
-        {isActive ? (
-          <button className="text-blue-400" onClick={handlePause}>
-            <PauseIcon />
-          </button>
-        ) : (
-          <button className="text-green-500" onClick={handleResume}>
+        {isPaused ? (
+          <button className="text-green-500" onClick={resumeTimer}>
             <PlayArrowIcon />
           </button>
+        ) : (
+          <button className="text-blue-400" onClick={pauseTimer}>
+            <PauseIcon />
+          </button>
         )}
-        <button className="text-red-500" onClick={handleEnd}>
+        <button className="text-red-500" onClick={cancelTimer}>
           <CloseIcon />
         </button>
       </div>
